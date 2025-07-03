@@ -1,17 +1,23 @@
 import streamlit as st
 import os
-from openai import OpenAI
+import openai  # make sure: pip install --upgrade openai
 
-client = OpenAI(
-  api_key=os.environ.get("OPENAI_API_KEY"),
-)
+# --------------------------------------------------
+# 🔑 Initialize OpenAI once at startup
+# --------------------------------------------------
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# --------------------------------------------------
+# 🎨 Streamlit Page Config
+# --------------------------------------------------
 st.set_page_config(page_title="Financial Planning Assistant", layout="wide")
 
 st.title("Client Financial Planning Assistant")
-st.caption("Generate a high‑level financial plan outline you can refine and deliver.")
+st.caption("Generate a high‑level financial plan outline ready for client delivery.")
 
-# ---------------- Sidebar Inputs ---------------- #
+# --------------------------------------------------
+# 🖋️ Sidebar Inputs
+# --------------------------------------------------
 with st.sidebar:
     st.header("Client Basics")
     age = st.number_input("Age", 18, 100, 35)
@@ -49,12 +55,13 @@ with st.sidebar:
     custom_notes = st.text_area("Add any custom client preferences or holdings (e.g. must keep ABC ETF).")
 
     st.header("AI Draft")
-    use_ai = st.checkbox("Generate AI‑assisted narrative (requires OpenAI API key)")
+    use_ai = st.checkbox("Generate AI‑assisted narrative (requires OPENAI_API_KEY)")
 
-# --------------- Helper Functions --------------- #
+# --------------------------------------------------
+# 🛠️ Helper Functions
+# --------------------------------------------------
 
 def recommend_portfolio(risk: str, include_insurance: bool = True):
-    """Return allocation dict based on risk tolerance."""
     if risk == "Low":
         base = {
             "Bonds": 40,
@@ -83,7 +90,7 @@ def recommend_portfolio(risk: str, include_insurance: bool = True):
         }
 
     if include_insurance:
-        reserve = 5  # percent for insurance premiums
+        reserve = 5
         base["Life Insurance Premium Reserve"] = reserve
         scale = (100 - reserve) / (sum(base.values()) - reserve)
         for k in list(base.keys()):
@@ -94,15 +101,14 @@ def recommend_portfolio(risk: str, include_insurance: bool = True):
 
 
 def recommend_insurance(age: int, smoker: str, health: str, income: float, risk: str):
-    """Return tuple of (product type, coverage amount)."""
-    base_need = income * 10  # simple rule of thumb
+    base_need = income * 10
     if age > 50:
         base_need *= 0.75
 
     if smoker == "Yes" or health in ("Fair", "Poor"):
         product = "Term Life (focus on affordability)"
     elif age < 45:
-        product = "Term Life with convertible option"
+        product = "Convertible Term Life"
     elif risk == "High":
         product = "Variable Universal Life"
     else:
@@ -129,15 +135,10 @@ def recommend_vehicles(age: int, income: float, kids: int):
 
 
 def get_ai_plan(context: str):
-    """Call OpenAI API to create a narrative plan."""
+    if not openai.api_key:
+        return "⚠️ OPENAI_API_KEY not found. Add it to your environment to enable AI drafting."
+
     try:
-        import openai
-
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            return "OpenAI API key not found in environment."
-        openai.api_key = api_key
-
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
@@ -149,8 +150,9 @@ def get_ai_plan(context: str):
     except Exception as e:
         return f"AI generation error: {e}"
 
-
-# --------------- Generate Plan --------------- #
+# --------------------------------------------------
+# 🚀 Main Action – Generate Plan
+# --------------------------------------------------
 if st.button("Generate Plan"):
     st.subheader("Client Snapshot")
     st.markdown(
@@ -198,4 +200,4 @@ if st.button("Generate Plan"):
         )
         st.write(get_ai_plan(context))
 
-    st.info("All recommendations are illustrative and should be validated for suitability, tax impact, and regulatory compliance.")
+    st.info("All recommendations are illustrative and must be reviewed for suitability, tax impact, and regulatory compliance before presentation.")
