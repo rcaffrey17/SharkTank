@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% set active_page = 'dashboard' %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="summary-cards">
+        <div class="card income-card">
+            <h3><i class="fas fa-money-bill-wave"></i> Income</h3>
+            <p>{{ "${:,.2f}".format(income) }}</p>
+        </div>
+        <div class="card expense-card">
+            <h3><i class="fas fa-shopping-cart"></i> Expenses</h3>
+            <p>{{ "${:,.2f}".format(expenses) }}</p>
+        </div>
+        <div class="card balance-card">
+            <h3><i class="fas fa-piggy-bank"></i> Balance</h3>
+            <p>{{ "${:,.2f}".format(income + expenses) }}</p>
+        </div>
+    </div>
+
+    <div class="recent-transactions">
+        <h2><i class="fas fa-history"></i> Recent Transactions</h2>
+        {% if transactions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.date }}</td>
+                        <td>{{ t.description or 'N/A' }}</td>
+                        <td>{{ t.category }}</td>
+                        <td class="{% if t.amount > 0 %}positive{% else %}negative{% endif %}">
+                            {{ "${:,.2f}".format(t.amount) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('transactions') }}" class="view-all">View All Transactions</a>
+        {% else %}
+            <p class="no-data">No transactions yet. <a href="{{ url_for('transactions') }}">Add your first transaction</a></p>
+        {% endif %}
+    </div>
+</section>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
+{% endblock %}

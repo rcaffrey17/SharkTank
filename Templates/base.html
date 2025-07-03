@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker | {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-wallet"></i> Finance Tracker</h1>
+            <nav>
+                <a href="{{ url_for('index') }}" {% if active_page == 'dashboard' %}class="active"{% endif %}>
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{{ url_for('transactions') }}" {% if active_page == 'transactions' %}class="active"{% endif %}>
+                    <i class="fas fa-exchange-alt"></i> Transactions
+                </a>
+                <a href="{{ url_for('budgets') }}" {% if active_page == 'budgets' %}class="active"{% endif %}>
+                    <i class="fas fa-chart-pie"></i> Budgets
+                </a>
+                <a href="{{ url_for('reports') }}" {% if active_page == 'reports' %}class="active"{% endif %}>
+                    <i class="fas fa-chart-line"></i> Reports
+                </a>
+                <a href="{{ url_for('analytics_redirect') }}" target="_blank" class="analytics-link">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

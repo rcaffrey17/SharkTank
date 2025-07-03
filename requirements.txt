@@ -1,0 +1,22 @@
+# Core Requirements
+flask==2.3.2
+werkzeug==2.3.6
+
+# Database
+sqlite3==2.6.0  # Usually comes with Python
+
+# Data Processing
+pandas==2.0.3
+
+# Visualization (for Streamlit)
+plotly==5.15.0
+streamlit==1.25.0
+
+# API Requests
+requests==2.31.0
+
+# Date Handling
+python-dateutil==2.8.2  # Often required by pandas
+
+# Development (optional)
+python-dotenv==1.0.0  # For environment variables

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Budgets{% endblock %}
+{% set active_page = 'budgets' %}
+
+{% block content %}
+<section class="budgets">
+    <div class="budget-form">
+        <h2><i class="fas fa-plus-circle"></i> Create New Budget</h2>
+        <form method="POST" id="budgetForm">
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select name="category" id="category" required>
+                    {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="limit_amount">Monthly Limit ($)</label>
+                <input type="number" step="0.01" name="limit_amount" id="limit_amount" required>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Save Budget
+            </button>
+        </form>
+    </div>
+
+    <div class="budget-list">
+        <h2><i class="fas fa-chart-pie"></i> Your Budgets</h2>
+        
+        {% if budgets %}
+            <div class="budget-cards">
+                {% for budget in budgets %}
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <h3>{{ budget.category }}</h3>
+                        <div class="budget-actions">
+                            <a href="#" class="edit-btn" data-id="{{ budget.id }}">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="delete-btn" data-id="{{ budget.id }}">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="budget-progress">
+                        {% set percentage = (budget.spent / budget.limit_amount * 100)|abs %}
+                        <div class="progress-bar">
+                        <div class="progress-text">
+                            <span>{{ "${:,.2f}".format(budget.spent) }} of {{ "${:,.2f}".format(budget.limit_amount) }}</span>
+                            <span>{{ percentage|round(1) }}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="budget-remaining">
+                        {% set remaining = budget.limit_amount - budget.spent %}
+                        <p>Remaining: <span class="{% if remaining >= 0 %}positive{% else %}negative{% endif %}">
+                            {{ "${:,.2f}".format(remaining) }}
+                        </span></p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-data">No budgets set up yet. Create your first budget above.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
