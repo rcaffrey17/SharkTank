@@ -5,6 +5,9 @@ import openai  # make sure: pip install --upgrade openai
 # --------------------------------------------------
 # 🔑 Initialize OpenAI once at startup
 # --------------------------------------------------
+from dotenv import load_dotenv
+load_dotenv()
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # --------------------------------------------------
