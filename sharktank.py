@@ -1,14 +1,13 @@
 import streamlit as st
 import os
-import openai  # make sure: pip install --upgrade openai
-
-# --------------------------------------------------
-# 🔑 Initialize OpenAI once at startup
-# --------------------------------------------------
 from dotenv import load_dotenv
-load_dotenv()
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# --------------------------------------------------
+# 🔑 Load .env file and OpenAI client
+# --------------------------------------------------
+load_dotenv()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # --------------------------------------------------
 # 🎨 Streamlit Page Config
@@ -138,11 +137,10 @@ def recommend_vehicles(age: int, income: float, kids: int):
 
 
 def get_ai_plan(context: str):
-    if not openai.api_key:
+    if client.api_key is None:
         return "⚠️ OPENAI_API_KEY not found. Add it to your environment to enable AI drafting."
-
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a CFP® producing concise, compliant financial plans."},
@@ -154,7 +152,7 @@ def get_ai_plan(context: str):
         return f"AI generation error: {e}"
 
 # --------------------------------------------------
-# 🚀 Main Action – Generate Plan
+# 🚀 Generate Plan
 # --------------------------------------------------
 if st.button("Generate Plan"):
     st.subheader("Client Snapshot")
