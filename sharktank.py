@@ -57,7 +57,7 @@ with st.sidebar:
     custom_notes = st.text_area("Add any custom client preferences or holdings (e.g. must keep ABC ETF).")
 
     st.header("AI Draft")
-    use_ai = st.checkbox("Generate AI‑assisted narrative (requires OPENAI_API_KEY)")
+    use_ai = st.checkbox("Enhance plan with AI (adds goals & custom notes)")
 
 # --------------------------------------------------
 # 🛠️ Helper Functions
@@ -136,32 +136,41 @@ def recommend_vehicles(age: int, income: float, kids: int):
     return vehicles
 
 
-def get_ai_plan(context: str):
-    if client.api_key is None:
-        return "⚠️ OPENAI_API_KEY not found. Add it to your environment to enable AI drafting."
+def enhance_with_ai(snapshot: str, goals: list, notes: str):
     try:
+        prompt = (
+            f"Here is a financial plan summary:\n\n{snapshot}\n\n"
+            f"Client goals: {', '.join(goals)}.\n"
+            f"Advisor notes: {notes}\n\n"
+            "Add a client-friendly enhancement to this plan:"
+            "\n1. Start with Retirement Planning (if applicable)."
+            "\n2. Reorder or highlight other client goals."
+            "\n3. Add custom suggestions based on advisor notes."
+            "\n4. End with a paragraph per selected goal in a separate section."
+        )
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are a CFP® producing concise, compliant financial plans."},
-                {"role": "user", "content": context},
+                {"role": "system", "content": "You are a CFP® creating tailored financial plans."},
+                {"role": "user", "content": prompt},
             ],
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        return f"AI generation error: {e}"
+        return f"AI enhancement error: {e}"
 
 # --------------------------------------------------
 # 🚀 Generate Plan
 # --------------------------------------------------
 if st.button("Generate Plan"):
     st.subheader("Client Snapshot")
-    st.markdown(
+    snapshot = (
         f"- **Age**: {age}\n"
         f"- **Marital Status**: {marital_status}\n"
         f"- **Children**: {kids}\n"
         f"- **Goals**: {', '.join(goals) if goals else 'None specified'}"
     )
+    st.markdown(snapshot)
 
     st.subheader("Net Worth & Cash Flow")
     st.markdown(
@@ -191,14 +200,8 @@ if st.button("Generate Plan"):
     st.markdown(custom_notes if custom_notes else "_None provided_")
 
     if use_ai:
-        st.subheader("AI‑Generated Narrative Plan")
-        context = (
-            f"Client age {age}, {kids} kids, {marital_status}, "
-            f"income {income}, assets {assets}, liabilities {liabilities}, expenses {expenses}, "
-            f"risk {risk_tolerance}, volatility {volatility_pref}, horizon {time_horizon_years} years, "
-            f"health {health_status}, smoker {smoker}, goals {goals}, advisor notes: {custom_notes}. "
-            "Generate a concise, client‑friendly financial plan outline."
-        )
-        st.write(get_ai_plan(context))
+        st.subheader("🔍 Enhanced AI Plan Suggestions")
+        enhanced = enhance_with_ai(snapshot, goals, custom_notes)
+        st.write(enhanced)
 
     st.info("All recommendations are illustrative and must be reviewed for suitability, tax impact, and regulatory compliance before presentation.")
