@@ -35,7 +35,7 @@ with st.sidebar:
     st.header("Risk & Horizon")
     risk_tolerance = st.selectbox("Risk Tolerance", ["Low", "Moderate", "High"])
     volatility_pref = st.selectbox("Volatility Comfort", ["Low", "Average", "High"])
-    time_horizon_years = st.slider("Primary Time Horizon (years)", 1, 40, 15)
+    time_horizon_years = st.slider("Primary Time Horizon (years)", 1, 65, 15)
 
     st.header("Health & Insurance")
     smoker = st.selectbox("Smoker?", ["No", "Yes"])
