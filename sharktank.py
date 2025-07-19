@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # --------------------------------------------------
-# 🔑 Load .env file and OpenAI client
+# Load .env file and OpenAI client
 # --------------------------------------------------
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # --------------------------------------------------
-# 🎨 Streamlit Page Config
+# Streamlit Page Config
 # --------------------------------------------------
 st.set_page_config(page_title="Financial Planning Assistant", layout="wide")
 
@@ -18,7 +18,7 @@ st.title("Client Financial Planning Assistant")
 st.caption("Generate a high‑level financial plan outline ready for client delivery.")
 
 # --------------------------------------------------
-# 🖋️ Sidebar Inputs
+# Sidebar Inputs
 # --------------------------------------------------
 with st.sidebar:
     st.header("Client Basics")
@@ -60,7 +60,7 @@ with st.sidebar:
     use_ai = st.checkbox("Enhance plan with AI (adds goals & custom notes)")
 
 # --------------------------------------------------
-# 🛠️ Helper Functions
+# Helper Functions
 # --------------------------------------------------
 
 def recommend_portfolio(risk: str, include_insurance: bool = True):
@@ -160,7 +160,7 @@ def enhance_with_ai(snapshot: str, goals: list, notes: str):
         return f"AI enhancement error: {e}"
 
 # --------------------------------------------------
-# 🚀 Generate Plan
+# Generate Plan
 # --------------------------------------------------
 if st.button("Generate Plan"):
     st.subheader("Client Snapshot")
