@@ -12,9 +12,9 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # --------------------------------------------------
 # Streamlit Page Config
 # --------------------------------------------------
-st.set_page_config(page_title="Financial Planning Assistant", layout="wide")
+st.set_page_config(page_title="SmartPlan", layout="wide")
 
-st.title("Client Financial Planning Assistant")
+st.title("SmartPlan: Client Financial Planning Assistant")
 st.caption("Generate a high‑level financial plan outline ready for client delivery.")
 
 # --------------------------------------------------
